@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fast Food Ordering</title>
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #f4f4f7);
+      --text-color: var(--tg-theme-text-color, #222222);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --button-color: var(--tg-theme-button-color, #31b545);
+      --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #8e8e93);
+      --accent-color: #ff9500;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      padding-bottom: 90px; /* Space for sticky bottom button */
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--hint-color);
+      margin: 16px 0 8px 4px;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .option-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+    }
+
+    .option-item:last-child {
+      border-bottom: none;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .price {
+      font-weight: 600;
+      color: var(--accent-color);
+      white-space: nowrap;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--button-color);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--button-color);
+    }
+
+    .footer-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      padding: 12px 16px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+    }
+
+    .submit-btn {
+      width: 100%;
+      max-width: 500px;
+      padding: 14px;
+      background-color: var(--button-color);
+      color: var(--button-text-color);
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Customer Contact Info -->
+  <h2>Customer Info</h2>
+  <div class="section input-group">
+    <input type="text" id="cust-name" class="input-field" placeholder="Your Name" required />
+    <input type="tel" id="cust-phone" class="input-field" placeholder="Phone Number (e.g. 0555123456)" required />
+  </div>
+
+  <!-- Main Dishes -->
+  <h2>Select Main Dish</h2>
+  <div class="section">
+    <label class="option-item">
+      <div class="option-label">
+        <input type="radio" name="main_item" value="Plain Fries (Dutch Fries)" data-price="180" checked onchange="calculateTotal()" />
+        <span>Plain Fries (Dutch Fries)</span>
+      </div>
+      <span class="price">180 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="radio" name="main_item" value="Brioche Hot Dog" data-price="240" onchange="calculateTotal()" />
+        <span>Brioche Hot Dog</span>
+      </div>
+      <span class="price">240 KGS</span>
+    </label>
+  </div>
+
+  <!-- Sauces -->
+  <h2>Sauces</h2>
+  <div class="section">
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Cheese Sauce" data-price="40" onchange="calculateTotal()" />
+        <span>Cheese Sauce</span>
+      </div>
+      <span class="price">40 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Truffle Sauce" data-price="60" onchange="calculateTotal()" />
+        <span>Truffle Sauce</span>
+      </div>
+      <span class="price">60 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="BBQ Sauce" data-price="40" onchange="calculateTotal()" />
+        <span>BBQ Sauce</span>
+      </div>
+      <span class="price">40 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Chili Sauce" data-price="40" onchange="calculateTotal()" />
+        <span>Chili Sauce</span>
+      </div>
+      <span class="price">40 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Mayonnaise" data-price="30" onchange="calculateTotal()" />
+        <span>Mayonnaise</span>
+      </div>
+      <span class="price">30 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Ketchup" data-price="30" onchange="calculateTotal()" />
+        <span>Ketchup</span>
+      </div>
+      <span class="price">30 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="sauce-cb" value="Garlic Sauce" data-price="40" onchange="calculateTotal()" />
+        <span>Garlic Sauce</span>
+      </div>
+      <span class="price">40 KGS</span>
+    </label>
+  </div>
+
+  <!-- Toppings -->
+  <h2>Toppings</h2>
+  <div class="section">
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="topping-cb" value="Parmesan Cheese" data-price="50" onchange="calculateTotal()" />
+        <span>Parmesan Cheese</span>
+      </div>
+      <span class="price">50 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="topping-cb" value="Crispy Onions" data-price="30" onchange="calculateTotal()" />
+        <span>Crispy Onions</span>
+      </div>
+      <span class="price">30 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="topping-cb" value="Jalapeños" data-price="30" onchange="calculateTotal()" />
+        <span>Jalapeños</span>
+      </div>
+      <span class="price">30 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="topping-cb" value="Pickled Cucumbers" data-price="30" onchange="calculateTotal()" />
+        <span>Pickled Cucumbers</span>
+      </div>
+      <span class="price">30 KGS</span>
+    </label>
+    <label class="option-item">
+      <div class="option-label">
+        <input type="checkbox" class="topping-cb" value="Green Onions" data-price="20" onchange="calculateTotal()" />
+        <span>Green Onions</span>
+      </div>
+      <span class="price">20 KGS</span>
+    </label>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="footer-bar">
+    <button id="submit-btn" class="submit-btn" onclick="submitOrder()">Place Order — 180 KGS</button>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    // Replace with your actual n8n Webhook Production URL
+    const N8N_WEBHOOK_URL = "https://your-n8n-instance.com/webhook/order";
+
+    // Auto-fill user information from Telegram SDK
+    document.addEventListener("DOMContentLoaded", () => {
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const u = tg.initDataUnsafe.user;
+        const nameInput = document.getElementById("cust-name");
+        if (nameInput && !nameInput.value) {
+          nameInput.value = [u.first_name, u.last_name].filter(Boolean).join(" ");
+        }
+      }
+      calculateTotal();
+    });
+
+    function calculateTotal() {
+      let total = 0;
+
+      // Main dish
+      const selectedMain = document.querySelector('input[name="main_item"]:checked');
+      if (selectedMain) {
+        total += parseInt(selectedMain.getAttribute('data-price')) || 0;
+      }
+
+      // Sauces
+      document.querySelectorAll('.sauce-cb:checked').forEach(cb => {
+        total += parseInt(cb.getAttribute('data-price')) || 0;
+      });
+
+      // Toppings
+      document.querySelectorAll('.topping-cb:checked').forEach(cb => {
+        total += parseInt(cb.getAttribute('data-price')) || 0;
+      });
+
+      document.getElementById('submit-btn').innerText = `Place Order — ${total} KGS`;
+      return total;
+    }
+
+    async function submitOrder() {
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+
+      if (!name || !phone) {
+        tg.showAlert("Please enter your Name and Phone Number.");
+        return;
+      }
+
+      const mainRadio = document.querySelector('input[name="main_item"]:checked');
+      const mainItem = mainRadio ? mainRadio.value : "";
+
+      const sauces = Array.from(document.querySelectorAll('.sauce-cb:checked')).map(cb => cb.value);
+      const toppings = Array.from(document.querySelectorAll('.topping-cb:checked')).map(cb => cb.value);
+      const totalPrice = calculateTotal();
+      const telegramId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 0;
+
+      const payload = {
+        telegram_id: telegramId,
+        name: name,
+        phone: phone,
+        main_item: mainItem,
+        sauces: sauces,
+        toppings: toppings,
+        total_price: totalPrice
+      };
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerText = "Processing...";
+
+      try {
+        const res = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          tg.close();
+        } else {
+          tg.showAlert("Order placement failed. Please try again.");
+          btn.disabled = false;
+          calculateTotal();
+        }
+      } catch (err) {
+        console.error(err);
+        tg.showAlert("Network error. Please try again.");
+        btn.disabled = false;
+        calculateTotal();
+      }
+    }
+  </script>
+</body>
+</html>
