@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -28,7 +29,8 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       padding: 16px;
-      padding-bottom: 90px; /* Space for sticky bottom button */
+      padding-bottom: 90px;
+      /* Space for sticky bottom button */
     }
 
     h2 {
@@ -74,7 +76,8 @@
       white-space: nowrap;
     }
 
-    input[type="radio"], input[type="checkbox"] {
+    input[type="radio"],
+    input[type="checkbox"] {
       width: 20px;
       height: 20px;
       accent-color: var(--button-color);
@@ -134,6 +137,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Customer Contact Info -->
@@ -148,7 +152,8 @@
   <div class="section">
     <label class="option-item">
       <div class="option-label">
-        <input type="radio" name="main_item" value="Plain Fries (Dutch Fries)" data-price="180" checked onchange="calculateTotal()" />
+        <input type="radio" name="main_item" value="Plain Fries (Dutch Fries)" data-price="180" checked
+          onchange="calculateTotal()" />
         <span>Plain Fries (Dutch Fries)</span>
       </div>
       <span class="price">180 KGS</span>
@@ -242,7 +247,8 @@
     </label>
     <label class="option-item">
       <div class="option-label">
-        <input type="checkbox" class="topping-cb" value="Pickled Cucumbers" data-price="30" onchange="calculateTotal()" />
+        <input type="checkbox" class="topping-cb" value="Pickled Cucumbers" data-price="30"
+          onchange="calculateTotal()" />
         <span>Pickled Cucumbers</span>
       </div>
       <span class="price">30 KGS</span>
@@ -267,7 +273,7 @@
     tg.expand();
 
     // Replace with your actual n8n Webhook Production URL
-    const N8N_WEBHOOK_URL = "https://your-n8n-instance.com/webhook/order";
+    const N8N_WEBHOOK_URL = "https://sarycoffee.app.n8n.cloud/webhook/order";
 
     // Auto-fill user information from Telegram SDK
     document.addEventListener("DOMContentLoaded", () => {
@@ -358,4 +364,5 @@
     }
   </script>
 </body>
+
 </html>
