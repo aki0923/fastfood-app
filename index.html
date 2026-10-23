@@ -8,264 +8,436 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-color: #f5f5f7;
+      --bg-color: #f2f2f7;
       --card-bg: #ffffff;
-      --text-color: #222222;
+      --text-main: #1c1c1e;
+      --text-muted: #8e8e93;
       --accent-yellow: #fce000;
-      /* Стиль Яндекс.Еда */
+      --accent-yellow-hover: #edd300;
       --accent-dark: #111111;
-      --hint-color: #8e8e93;
       --border-color: #e5e5ea;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-color);
-      padding-bottom: 100px;
+      color: var(--text-main);
+      padding-bottom: 110px;
+      user-select: none;
     }
 
-    .header {
-      background: var(--card-bg);
-      padding: 16px;
-      font-size: 1.3rem;
-      font-weight: 800;
-      border-bottom: 1px solid var(--border-color);
-      sticky: top;
+    /* Шапка / Баннер */
+    .brand-header {
+      background: #ffffff;
+      padding: 20px 16px 16px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
     }
 
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid #fff;
+    }
+
+    .brand-info h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--accent-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Заголовки категорий */
     .category-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 16px 16px 8px 16px;
-      color: #444;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 22px 16px 12px 16px;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
+    /* Список блюд */
     .menu-grid {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       padding: 0 16px;
     }
 
     .menu-card {
       background: var(--card-bg);
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: var(--radius-lg);
+      padding: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
       cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .menu-card:active {
+      transform: scale(0.98);
+    }
+
+    .menu-card-img {
+      width: 96px;
+      height: 96px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      background-color: #f8f8f8;
+      flex-shrink: 0;
+    }
+
+    .menu-card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .menu-card-info h3 {
       font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 6px;
+      color: var(--text-main);
     }
 
-    .menu-card-info p {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #000;
+    .menu-card-info .price {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--accent-dark);
     }
 
     .add-btn {
       background: var(--accent-yellow);
       color: var(--accent-dark);
       border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 700;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(252, 224, 0, 0.4);
+      transition: background-color 0.15s ease;
+      flex-shrink: 0;
     }
 
-    /* Pop-up (Bottom Sheet) */
+    .add-btn:active {
+      background: var(--accent-yellow-hover);
+    }
+
+    /* Modal / Bottom Sheet */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
       display: none;
       justify-content: flex-end;
       flex-direction: column;
       z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease;
     }
 
     .modal-overlay.active {
       display: flex;
+      opacity: 1;
     }
 
     .modal-content {
       background: var(--card-bg);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      padding: 20px;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      padding: 12px 20px 24px 20px;
       max-height: 85vh;
       overflow-y: auto;
-      animation: slideUp 0.25s ease-out;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
     }
 
-    @keyframes slideUp {
-      from {
-        transform: translateY(100%);
-      }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
 
-      to {
-        transform: translateY(0);
-      }
+    .modal-drag-handle {
+      width: 36px;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      margin: 0 auto 14px auto;
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
     }
 
     .close-btn {
-      background: #eee;
+      background: var(--bg-color);
       border: none;
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
       font-weight: bold;
+      color: var(--text-muted);
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .option-group {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .option-group h4 {
-      font-size: 0.95rem;
-      color: var(--hint-color);
-      margin-bottom: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 10px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .option-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--bg-color);
+      padding: 12px;
+      background: var(--bg-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      cursor: pointer;
     }
 
     .option-item label {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-size: 0.95rem;
+      font-weight: 600;
       width: 100%;
       cursor: pointer;
     }
 
-    /* Корзина Бар */
+    .option-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-dark);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .option-price {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    /* Нижняя плавающая корзина */
     .cart-bar {
       position: fixed;
-      bottom: 16px;
+      bottom: 20px;
       left: 16px;
       right: 16px;
       background: var(--accent-yellow);
-      border-radius: 16px;
-      padding: 14px 20px;
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-weight: 800;
+      box-shadow: var(--shadow-lg);
       cursor: pointer;
       z-index: 90;
+      transition: transform 0.2s ease;
+    }
+
+    .cart-bar:active {
+      transform: scale(0.98);
+    }
+
+    .cart-bar-title {
+      font-size: 1rem;
+      color: var(--accent-dark);
     }
 
     .cart-bar-btn {
       background: var(--accent-dark);
-      color: #fff;
-      padding: 6px 12px;
+      color: #ffffff;
+      padding: 8px 16px;
       border-radius: 12px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 700;
     }
 
+    /* Поля ввода в корзине */
     .input-field {
       width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
+      padding: 14px 16px;
+      background: var(--bg-color);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
       margin-bottom: 10px;
       outline: none;
       font-size: 1rem;
+      font-weight: 500;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-dark);
+      background: #fff;
     }
 
     .submit-order-btn {
       width: 100%;
       background: var(--accent-yellow);
+      color: var(--accent-dark);
       border: none;
-      padding: 14px;
-      border-radius: 12px;
+      padding: 16px;
+      border-radius: var(--radius-md);
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 1.05rem;
       cursor: pointer;
       margin-top: 10px;
+      box-shadow: 0 4px 14px rgba(252, 224, 0, 0.4);
+    }
+
+    .submit-order-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Доп. стили для списка в корзине */
+    .cart-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .cart-item-remove {
+      color: #ff3b30;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding-left: 10px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="header">🍟 Fryday Express</div>
+  <!-- Шапка -->
+  <div class="brand-header">
+    <img src="fryday logo.jpg" alt="Fryday Logo" class="brand-logo" />
+    <div class="brand-info">
+      <h1>Fryday Express 🍟</h1>
+      <p>Быстрый предзаказ • Голландский фри &amp; хот-доги</p>
+    </div>
+  </div>
 
-  <div class="category-title">Основные блюда</div>
+  <!-- Категория: Основные блюда -->
+  <div class="category-title">🔥 Основные блюда</div>
   <div class="menu-grid">
     <div class="menu-card" onclick="openProductModal('Plain Fries (Dutch Fries)', 180)">
+      <img src="fries.png" alt="Картофель Фри" class="menu-card-img" />
       <div class="menu-card-info">
         <h3>Картофель Фри (Dutch Fries)</h3>
-        <p>180 KGS</p>
+        <span class="price">180 KGS</span>
       </div>
       <button class="add-btn">+</button>
     </div>
+
     <div class="menu-card" onclick="openProductModal('Brioche Hot Dog', 240)">
+      <img src="hotdog.jpg" alt="Хот-дог" class="menu-card-img" />
       <div class="menu-card-info">
         <h3>Хот-дог в булочке Бриошь</h3>
-        <p>240 KGS</p>
+        <span class="price">240 KGS</span>
       </div>
       <button class="add-btn">+</button>
     </div>
   </div>
 
-  <div class="category-title">Напитки</div>
+  <!-- Категория: Напитки -->
+  <div class="category-title">🥤 Напитки</div>
   <div class="menu-grid">
     <div class="menu-card" onclick="addDirectItem('Coca-Cola 0.5л', 90)">
       <div class="menu-card-info">
         <h3>Coca-Cola 0.5л</h3>
-        <p>90 KGS</p>
+        <span class="price">90 KGS</span>
       </div>
       <button class="add-btn">+</button>
     </div>
+
     <div class="menu-card" onclick="addDirectItem('Fanta 0.5л', 90)">
       <div class="menu-card-info">
         <h3>Fanta 0.5л</h3>
-        <p>90 KGS</p>
+        <span class="price">90 KGS</span>
       </div>
       <button class="add-btn">+</button>
     </div>
+
     <div class="menu-card" onclick="addDirectItem('Sprite 0.5л', 90)">
       <div class="menu-card-info">
         <h3>Sprite 0.5л</h3>
-        <p>90 KGS</p>
+        <span class="price">90 KGS</span>
       </div>
       <button class="add-btn">+</button>
     </div>
@@ -274,6 +446,7 @@
   <!-- Pop-up (Bottom Sheet) настройки блюда -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-content">
+      <div class="modal-drag-handle"></div>
       <div class="modal-header">
         <h3 id="modal-item-title">Блюдо</h3>
         <button class="close-btn" onclick="closeModal('product-modal')">✕</button>
@@ -281,44 +454,29 @@
 
       <div class="option-group">
         <h4>Соусы</h4>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Сырный соус" data-price="40">
-            Сырный соус</label><span>40 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Трюфельный соус"
-              data-price="60"> Трюфельный соус</label><span>60 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="BBQ соус" data-price="40"> BBQ
-            соус</label><span>40 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Чили соус" data-price="40">
-            Чили соус</label><span>40 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Майонез" data-price="30">
-            Майонез</label><span>30 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Кетчуп" data-price="30">
-            Кетчуп</label><span>30 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Чесночный соус"
-              data-price="40"> Чесночный соус</label><span>40 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Сырный соус" data-price="40"> Сырный соус</label><span class="option-price">+40 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Трюфельный соус" data-price="60"> Трюфельный соус</label><span class="option-price">+60 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="BBQ соус" data-price="40"> BBQ соус</label><span class="option-price">+40 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Чили соус" data-price="40"> Чили соус</label><span class="option-price">+40 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Майонез" data-price="30"> Майонез</label><span class="option-price">+30 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Кетчуп" data-price="30"> Кетчуп</label><span class="option-price">+30 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-sauce" value="Чесночный соус" data-price="40"> Чесночный соус</label><span class="option-price">+40 KGS</span></div>
       </div>
 
       <div class="option-group">
         <h4>Топпинги</h4>
-        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Сыр Пармезан"
-              data-price="50"> Сыр Пармезан</label><span>50 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Хрустящий лук"
-              data-price="30"> Хрустящий лук</label><span>30 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Халапеньо" data-price="30">
-            Халапеньо</label><span>30 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Маринованные огурцы"
-              data-price="30"> Маринованные огурцы</label><span>30 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Зеленый лук"
-              data-price="20"> Зеленый лук</label><span>20 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Сыр Пармезан" data-price="50"> Сыр Пармезан</label><span class="option-price">+50 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Хрустящий лук" data-price="30"> Хрустящий лук</label><span class="option-price">+30 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Халапеньо" data-price="30"> Халапеньо</label><span class="option-price">+30 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Маринованные огурцы" data-price="30"> Маринованные огурцы</label><span class="option-price">+30 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-topping" value="Зеленый лук" data-price="20"> Зеленый лук</label><span class="option-price">+20 KGS</span></div>
       </div>
 
       <div class="option-group">
         <h4>Добавить напиток</h4>
-        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Coca-Cola 0.5л"
-              data-price="90"> Coca-Cola 0.5л</label><span>90 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Fanta 0.5л" data-price="90">
-            Fanta 0.5л</label><span>90 KGS</span></div>
-        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Sprite 0.5л" data-price="90">
-            Sprite 0.5л</label><span>90 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Coca-Cola 0.5л" data-price="90"> Coca-Cola 0.5л</label><span class="option-price">+90 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Fanta 0.5л" data-price="90"> Fanta 0.5л</label><span class="option-price">+90 KGS</span></div>
+        <div class="option-item"><label><input type="checkbox" class="popup-drink" value="Sprite 0.5л" data-price="90"> Sprite 0.5л</label><span class="option-price">+90 KGS</span></div>
       </div>
 
       <button class="submit-order-btn" onclick="confirmAddItem()">Добавить в корзину</button>
@@ -328,14 +486,18 @@
   <!-- Корзина (Modal) -->
   <div class="modal-overlay" id="cart-modal">
     <div class="modal-content">
+      <div class="modal-drag-handle"></div>
       <div class="modal-header">
         <h3>Ваш заказ</h3>
         <button class="close-btn" onclick="closeModal('cart-modal')">✕</button>
       </div>
+
       <div id="cart-items-list" style="margin-bottom: 16px;"></div>
 
-      <input type="text" id="cust-name" class="input-field" placeholder="Ваше Имя" required />
-      <input type="tel" id="cust-phone" class="input-field" placeholder="Номер телефона" required />
+      <div style="margin-top: 10px;">
+        <input type="text" id="cust-name" class="input-field" placeholder="Ваше Имя" required />
+        <input type="tel" id="cust-phone" class="input-field" placeholder="Номер телефона" required />
+      </div>
 
       <button id="final-submit-btn" class="submit-order-btn" onclick="submitFinalOrder()">Оформить заказ</button>
     </div>
@@ -343,7 +505,7 @@
 
   <!-- Нижний плавающий бар Корзины -->
   <div class="cart-bar" id="cart-bar" style="display:none;" onclick="openCart()">
-    <span id="cart-summary-text">0 товаров</span>
+    <span class="cart-bar-title" id="cart-summary-text">0 товаров</span>
     <span class="cart-bar-btn" id="cart-total-price">0 KGS</span>
   </div>
 
@@ -352,7 +514,7 @@
     tg.ready();
     tg.expand();
 
-    const N8N_WEBHOOK_URL = "https://fryday11.app.n8n.cloud/webhook/order"; // Вставьте ваш Webhook URL
+    const N8N_WEBHOOK_URL = "https://fryday11.app.n8n.cloud/webhook/order";
 
     let cart = [];
     let currentModalItem = { name: '', basePrice: 0 };
@@ -364,23 +526,35 @@
       }
     });
 
+    function triggerHaptic() {
+      if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+    }
+
     function openProductModal(name, basePrice) {
+      triggerHaptic();
       currentModalItem = { name, basePrice };
       document.getElementById('modal-item-title').innerText = name;
       document.querySelectorAll('.popup-sauce, .popup-topping, .popup-drink').forEach(cb => cb.checked = false);
-      document.getElementById('product-modal').classList.add('active');
+      
+      const modal = document.getElementById('product-modal');
+      modal.classList.add('active');
     }
 
     function closeModal(id) {
+      triggerHaptic();
       document.getElementById(id).classList.remove('active');
     }
 
     function addDirectItem(name, price) {
+      triggerHaptic();
       cart.push({ title: name, price: price, details: [] });
       updateCartBar();
     }
 
     function confirmAddItem() {
+      triggerHaptic();
       let extraPrice = 0;
       let details = [];
 
@@ -407,6 +581,16 @@
       updateCartBar();
     }
 
+    function removeFromCart(index) {
+      triggerHaptic();
+      cart.splice(index, 1);
+      updateCartBar();
+      openCart();
+      if (cart.length === 0) {
+        closeModal('cart-modal');
+      }
+    }
+
     function updateCartBar() {
       const bar = document.getElementById('cart-bar');
       if (cart.length === 0) {
@@ -420,14 +604,24 @@
     }
 
     function openCart() {
+      triggerHaptic();
       const container = document.getElementById('cart-items-list');
       container.innerHTML = '';
+      
+      if(cart.length === 0) return;
+
       cart.forEach((item, index) => {
-        const detailsText = item.details.length > 0 ? `<br><small style="color:#666">${item.details.join(', ')}</small>` : '';
+        const detailsText = item.details.length > 0 ? `<div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">${item.details.join(', ')}</div>` : '';
         container.innerHTML += `
-          <div class="option-item">
-            <div><strong>${item.title}</strong>${detailsText}</div>
-            <span style="font-weight:bold">${item.price} KGS</span>
+          <div class="cart-item-row">
+            <div>
+              <strong>${item.title}</strong>
+              ${detailsText}
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:700">${item.price} KGS</span>
+              <span class="cart-item-remove" onclick="removeFromCart(${index})">✕</span>
+            </div>
           </div>
         `;
       });
@@ -435,6 +629,7 @@
     }
 
     async function submitFinalOrder() {
+      triggerHaptic();
       const name = document.getElementById('cust-name').value.trim();
       const phone = document.getElementById('cust-phone').value.trim();
 
@@ -470,10 +665,12 @@
         } else {
           tg.showAlert("Ошибка отправки. Попробуйте еще раз.");
           btn.disabled = false;
+          btn.innerText = "Оформить заказ";
         }
       } catch (err) {
         tg.showAlert("Ошибка сети.");
         btn.disabled = false;
+        btn.innerText = "Оформить заказ";
       }
     }
   </script>
